@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+@theme {
+  --color-lime-accent: #83FF00;
+  --color-lime-dark: #5BBF00;
+  --color-bg-black: #000000;
+  --color-bg-card: #141414;
+  --color-bg-card-hover: #1c1c1c;
+  --color-border-subtle: #222222;
+  --color-red-accent: #cc0000;
+}
+
+/* ===== FORCE PURE BLACK ===== */
+html {
+  background-color: #000000 !important;
+  color-scheme: dark;
+}
+
+body {
+  background: #000000 !important;
+  color: #f0f0f0 !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+* { box-sizing: border-box; }
+
+/* ===== BACKGROUND ===== */
+.gradient-bg {
+  background: #000000 !important;
+}
+
+/* ===== GRID OVERLAY ===== */
+.grid-overlay {
+  background-image: none;
+}
+
+/* ===== GLASS CARDS — charcoal grey ===== */
+.glass-card {
+  background: #141414 !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid #222222;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: #333333;
+  box-shadow: 0 0 20px rgba(131, 255, 0, 0.04);
+}
+
+/* ===== NEON TEXT — lime green gradient ===== */
+.neon-text {
+  background: linear-gradient(135deg, #83FF00, #AAFF32);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== NEON TEXT — red/warm accent ===== */
+.neon-text-purple {
+  background: linear-gradient(135deg, #ff3333, #ff6644);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== NEON BORDER ===== */
+.neon-border {
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+.neon-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #83FF00, #444);
+  z-index: -1;
+  opacity: 0.4;
+}
+
+/* ===== BUTTONS ===== */
+.btn-neon {
+  background: transparent !important;
+  border: 2px solid #83FF00 !important;
+  color: #83FF00 !important;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-neon:hover {
+  background: rgba(131, 255, 0, 0.08) !important;
+  box-shadow: 0 0 20px rgba(131, 255, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.btn-neon-solid {
+  background: #83FF00 !important;
+  border: none !important;
+  color: #000000 !important;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-neon-solid:hover {
+  background: #95FF33 !important;
+  box-shadow: 0 0 30px rgba(131, 255, 0, 0.35);
+  transform: translateY(-2px);
+}
+
+/* ===== STAT VALUES ===== */
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #83FF00, #AAFF32);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #000000; }
+::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #83FF00; }
+
+/* ===== FORM INPUTS ===== */
+input, select, textarea {
+  background-color: #0a0a0a !important;
+  color: #f0f0f0 !important;
+  border: 1px solid #2a2a2a !important;
+  border-radius: 10px;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #83FF00 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(131, 255, 0, 0.1) !important;
+}
+
+select option {
+  background-color: #141414 !important;
+  color: #f0f0f0 !important;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pulse-neon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.pulse-neon { animation: pulse-neon 2s ease-in-out infinite; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-20px) translateX(10px); }
+  50% { transform: translateY(-10px) translateX(-10px); }
+  75% { transform: translateY(-30px) translateX(5px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(131, 255, 0, 0.04), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ===== STATUS INDICATORS ===== */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.status-online {
+  background: #83FF00;
+  box-shadow: 0 0 10px #83FF00;
+}
+.status-offline {
+  background: #ff3333;
+  box-shadow: 0 0 10px #ff3333;
+}
+
+/* ===== RED ACCENT BORDERS (like the reference) ===== */
+.red-border-top {
+  border-top: 3px solid #cc0000;
+}
+.red-border-bottom {
+  border-bottom: 3px solid #cc0000;
+}
