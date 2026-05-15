@@ -83,6 +83,8 @@ export default function DashboardPage() {
       if ([3, 4, 7, 8, 11, 12].includes(run)) {
         return (sub + run) % 2 === 0 ? "Left Hand" : "Right Hand";
       }
+      // Other runs are resting state
+      return "Rest";
     }
     // Default to a mix, heavily leaning towards one based on string length
     return filename.length % 2 === 0 ? "Left Hand" : "Right Hand";
