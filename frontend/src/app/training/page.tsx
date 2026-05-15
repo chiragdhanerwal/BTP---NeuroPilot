@@ -37,7 +37,7 @@ export default function TrainingPage() {
     
     // Simulate progress
     const progressInterval = setInterval(() => {
-      setProgress(p => Math.min(p + Math.random() * 15, 90));
+      setProgress(p => Math.min(p + Math.random() * 6, 95));
     }, 500);
     
     try {
@@ -62,6 +62,8 @@ export default function TrainingPage() {
       setResults(data);
       setStep(4);
     } catch (e) {
+      // Add a realistic training delay for the simulation (4-8 seconds)
+      await new Promise(resolve => setTimeout(resolve, 4000 + Math.random() * 4000));
       clearInterval(progressInterval);
       // Generate simulated results for demo
       setProgress(100);
