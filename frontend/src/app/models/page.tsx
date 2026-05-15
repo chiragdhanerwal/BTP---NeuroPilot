@@ -21,7 +21,8 @@ export default function ModelsPage() {
 
   // Try to load from API
   useEffect(() => {
-    fetch("http://localhost:8000/api/v1/training/models")
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    fetch(`${API_URL}/api/v1/training/models`)
       .then(res => res.json())
       .then(data => {
         if (data.models?.length > 0) setModels(data.models);

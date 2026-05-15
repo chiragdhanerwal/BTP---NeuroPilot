@@ -80,4 +80,5 @@ WS_HEARTBEAT_INTERVAL = 5  # seconds
 
 # API
 API_PREFIX = "/api/v1"
-CORS_ORIGINS = ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000"]
+allowed_origins_env = os.environ.get("ALLOWED_ORIGINS")
+CORS_ORIGINS = allowed_origins_env.split(",") if allowed_origins_env else ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "*"]

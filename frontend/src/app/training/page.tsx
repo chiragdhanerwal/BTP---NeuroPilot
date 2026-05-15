@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Cpu, Play, CheckCircle, Loader2, Database, Settings, BarChart3, Download, ChevronRight } from "lucide-react";
+import { Cpu, Play, CheckCircle, Loader2, Database, Settings, BarChart3, Download, ChevronRight, Upload, Cloud } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import ConwayBackground from "@/components/ConwayBackground";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Tooltip } from "recharts";
 
 const MODELS = [
@@ -17,6 +18,9 @@ export default function TrainingPage() {
   const [selectedModel, setSelectedModel] = useState("csp_lda");
   const [subjects, setSubjects] = useState("1,2,3");
   const [task, setTask] = useState("fists");
+  const [datasetType, setDatasetType] = useState("eegmmidb");
+  const [customFile, setCustomFile] = useState<File | null>(null);
+  const [gdriveLink, setGdriveLink] = useState("");
   const [bandpassLow, setBandpassLow] = useState(8);
   const [bandpassHigh, setBandpassHigh] = useState(30);
   const [testSize, setTestSize] = useState(0.2);
@@ -44,7 +48,8 @@ export default function TrainingPage() {
         bandpass_high: bandpassHigh.toString(),
       });
       
-      const res = await fetch(`http://localhost:8000/api/v1/training/start?${params}`, { method: "POST" });
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await fetch(`${API_URL}/api/v1/training/start?${params}`, { method: "POST" });
       
       if (!res.ok) {
         // Fallback to simulated results
@@ -89,7 +94,8 @@ export default function TrainingPage() {
   ) || [];
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen relative">
+      <ConwayBackground />
       <Navbar />
       <div className="pt-20 px-4 max-w-6xl mx-auto pb-16">
         <div className="mb-8">
@@ -119,29 +125,84 @@ export default function TrainingPage() {
             <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
               <div className="glass-card p-6 mb-4">
                 <h2 className="text-lg font-bold mb-4 flex items-center gap-2"><Database className="w-5 h-5 text-[#83FF00]" /> Select Dataset</h2>
-                <div className="glass-card !bg-[#83FF00]/5 !border-green-500/30 p-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-[#83FF00]/20 flex items-center justify-center"><Database className="w-6 h-6 text-[#83FF00]" /></div>
-                    <div>
-                      <h3 className="font-bold">EEGMMIDB</h3>
-                      <p className="text-xs text-gray-400">103 subjects • 64 channels • 160 Hz • Motor Imagery</p>
+                <div className="grid md:grid-cols-3 gap-4 mb-6">
+                  <button 
+                    onClick={() => setDatasetType("eegmmidb")}
+                    className={`text-left p-4 rounded-xl border transition-all ${datasetType === "eegmmidb" ? "bg-[#83FF00]/5 border-green-500/30" : "bg-white/[0.02] border-white/5"}`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-10 h-10 rounded-xl bg-[#83FF00]/20 flex items-center justify-center"><Database className="w-5 h-5 text-[#83FF00]" /></div>
+                      {datasetType === "eegmmidb" && <CheckCircle className="w-5 h-5 text-[#83FF00]" />}
                     </div>
-                    <CheckCircle className="w-5 h-5 text-[#83FF00] ml-auto" />
-                  </div>
+                    <h3 className="font-bold">EEGMMIDB</h3>
+                    <p className="text-xs text-gray-400 mt-1">103 subjects • 64 ch • Motor Imagery</p>
+                  </button>
+
+                  <button 
+                    onClick={() => setDatasetType("upload")}
+                    className={`text-left p-4 rounded-xl border transition-all ${datasetType === "upload" ? "bg-[#ff6644]/5 border-[#ff6644]/30" : "bg-white/[0.02] border-white/5"}`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-10 h-10 rounded-xl bg-[#ff6644]/20 flex items-center justify-center"><Upload className="w-5 h-5 text-[#ff6644]" /></div>
+                      {datasetType === "upload" && <CheckCircle className="w-5 h-5 text-[#ff6644]" />}
+                    </div>
+                    <h3 className="font-bold">Upload Custom</h3>
+                    <p className="text-xs text-gray-400 mt-1">Upload your own .csv or .edf files</p>
+                  </button>
+
+                  <button 
+                    onClick={() => setDatasetType("gdrive")}
+                    className={`text-left p-4 rounded-xl border transition-all ${datasetType === "gdrive" ? "bg-[#66CC00]/5 border-[#66CC00]/30" : "bg-white/[0.02] border-white/5"}`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="w-10 h-10 rounded-xl bg-[#66CC00]/20 flex items-center justify-center"><Cloud className="w-5 h-5 text-[#66CC00]" /></div>
+                      {datasetType === "gdrive" && <CheckCircle className="w-5 h-5 text-[#66CC00]" />}
+                    </div>
+                    <h3 className="font-bold">Google Drive</h3>
+                    <p className="text-xs text-gray-400 mt-1">Import dataset via Drive link</p>
+                  </button>
                 </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-gray-400 block mb-2">Subjects (comma-separated)</label>
-                    <input value={subjects} onChange={e => setSubjects(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:border-green-500/50 focus:outline-none transition" />
+
+                {datasetType === "eegmmidb" && (
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs text-gray-400 block mb-2">Subjects (comma-separated)</label>
+                      <input value={subjects} onChange={e => setSubjects(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:border-green-500/50 focus:outline-none transition" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-400 block mb-2">Task Type</label>
+                      <select value={task} onChange={e => setTask(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:border-green-500/50 focus:outline-none transition appearance-none">
+                        <option value="fists">Motor Imagery - Left/Right Fists</option>
+                        <option value="bilateral">Motor Imagery - Bilateral (Fists/Feet)</option>
+                      </select>
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-xs text-gray-400 block mb-2">Task Type</label>
-                    <select value={task} onChange={e => setTask(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:border-green-500/50 focus:outline-none transition appearance-none">
-                      <option value="fists">Motor Imagery - Left/Right Fists</option>
-                      <option value="bilateral">Motor Imagery - Bilateral (Fists/Feet)</option>
-                    </select>
+                )}
+
+                {datasetType === "upload" && (
+                  <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center bg-white/[0.02]">
+                    <Upload className="w-8 h-8 text-gray-500 mx-auto mb-3" />
+                    <p className="text-sm font-bold mb-1">Drag & drop your dataset</p>
+                    <p className="text-xs text-gray-500 mb-4">Supports .csv, .edf, and .set files</p>
+                    <label className="btn-neon inline-block cursor-pointer">
+                      Browse Files
+                      <input type="file" className="hidden" accept=".csv,.edf,.set" onChange={e => setCustomFile(e.target.files?.[0] || null)} />
+                    </label>
+                    {customFile && <p className="text-xs text-[#83FF00] mt-3">Selected: {customFile.name}</p>}
                   </div>
-                </div>
+                )}
+
+                {datasetType === "gdrive" && (
+                  <div>
+                    <label className="text-xs text-gray-400 block mb-2">Google Drive Shared Link</label>
+                    <input 
+                      value={gdriveLink} 
+                      onChange={e => setGdriveLink(e.target.value)} 
+                      placeholder="https://drive.google.com/file/d/.../view" 
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm focus:border-green-500/50 focus:outline-none transition" 
+                    />
+                  </div>
+                )}
               </div>
               <button onClick={() => setStep(2)} className="btn-neon-solid flex items-center gap-2">Next <ChevronRight className="w-4 h-4" /></button>
             </motion.div>
